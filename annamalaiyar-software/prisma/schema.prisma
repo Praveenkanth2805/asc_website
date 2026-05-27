@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+  otp      String?
+  otpExp   DateTime?
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String
+  startingPrice Float
+  category      String
+  image         String
+  whatsappMsg   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Portfolio {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  image       String
+  link        String?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Lead {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  service   String?
+  message   String
+  status    String    @default("NEW")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  quotes    Quote[]
+  projects  Project[]
+}
+
+model Quote {
+  id           String   @id @default(cuid())
+  leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id])
+  serviceName  String
+  price        Float
+  description  String
+  deliveryTime String
+  status       String   @default("SENT")
+  createdAt    DateTime @default(now())
+}
+
+model Project {
+  id               String   @id @default(cuid())
+  leadId           String
+  lead             Lead     @relation(fields: [leadId], references: [id])
+  quoteId          String?
+  status           String   // e.g., IN_PROGRESS
+  progressNote     String?
+  expectedDelivery DateTime?
+  updates          String?  // JSON array
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Blog {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String
+  image     String?
+  category  String
+  seoTitle  String?
+  seoDesc   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Int      @default(5)
+  message   String
+  service   String?
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}

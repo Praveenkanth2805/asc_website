@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Define custom theme colours (replaces tailwind.config.ts) */
+@theme {
+  --color-gold-400: #F5D442;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #B4942E;
+  --color-luxury-black: #0B0B0B;
+  --color-luxury-dark: #1A1A1A;
+}
+
+/* Glass effect using plain CSS (avoid @apply with opacity modifiers) */
+.glass {
+  background-color: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(212 175 55 / 0.2);
+}

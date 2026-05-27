@@ -1,0 +1,22 @@
+{
+  "home": "Home",
+  "services": "Services",
+  "portfolio": "Portfolio",
+  "blog": "Blog",
+  "contact": "Contact",
+  "track": "Track Project",
+  "get_quote": "Get Free Quote",
+  "reviews": "Reviews",
+  "about": "About",
+  "privacy": "Privacy Policy",
+  "terms": "Terms of Service",
+  "submit": "Submit",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
+  "message": "Message",
+  "send": "Send Message",
+  "thank_you": "Thank you! We'll get back to you soon.",
+  "track_info": "Enter your email or Quote ID to track your project.",
+  "track_btn": "Track"
+}
