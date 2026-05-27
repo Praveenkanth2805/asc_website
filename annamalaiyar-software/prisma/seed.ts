@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   const adminEmail = process.env.ADMIN_EMAIL!
   const existing = await prisma.admin.findUnique({ where: { email: adminEmail } })
   if (!existing) {
-    const hashed = await bcrypt.hash('praveen@123', 12)
+    const hashed = await bcrypt.hash('praveen@2811', 12)
     await prisma.admin.create({
       data: {
         email: adminEmail,
