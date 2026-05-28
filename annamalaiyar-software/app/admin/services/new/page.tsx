@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function NewService() {
   const router = useRouter();
@@ -49,10 +50,10 @@ export default function NewService() {
         <input type="number" placeholder="Starting Price" required className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, startingPrice: +e.target.value })} />
         <input placeholder="Category" required className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, category: e.target.value })} />
         <div>
-          <label className="block mb-1">Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-2" />
-          {uploading && <p className="text-sm">Uploading...</p>}
-          {form.image && <img src={form.image} alt="preview" className="h-20 rounded" />}
+          <ImageUpload
+  currentImage={form.image}
+  onUpload={(url) => setForm({ ...form, image: url })}
+/>
         </div>
         <input placeholder="WhatsApp Message (optional)" className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, whatsappMsg: e.target.value })} />
         <button type="submit" className="bg-gold-500 text-black px-6 py-3 rounded font-semibold">Create Service</button>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function NewBlog() {
   const router = useRouter();
@@ -48,10 +49,10 @@ export default function NewBlog() {
         <input placeholder="Slug" required className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, slug: e.target.value })} />
         <textarea placeholder="Content (HTML)" required rows={6} className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, content: e.target.value })} />
         <div>
-          <label className="block mb-1">Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-2" />
-          {uploading && <p className="text-sm">Uploading...</p>}
-          {form.image && <img src={form.image} alt="preview" className="h-20 rounded" />}
+          <ImageUpload
+  currentImage={form.image}
+  onUpload={(url) => setForm({ ...form, image: url })}
+/>
         </div>
         <input placeholder="Category" required className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, category: e.target.value })} />
         <input placeholder="SEO Title (optional)" className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, seoTitle: e.target.value })} />

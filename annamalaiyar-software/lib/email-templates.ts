@@ -93,6 +93,7 @@ export function otpEmail(otp: string) {
   <body>
     <div class="container">
       <div class="header">
+        <img src="./favicon.ico" height=50px width=50px>
         <h1>Annamalaiyar Software Centre</h1>
       </div>
       <div class="content">

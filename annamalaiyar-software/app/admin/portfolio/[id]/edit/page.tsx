@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function EditPortfolio() {
   const router = useRouter();
@@ -55,10 +56,10 @@ export default function EditPortfolio() {
         <input placeholder="Title" required value={form.title} className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, title: e.target.value })} />
         <input placeholder="Category" required value={form.category} className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, category: e.target.value })} />
         <div>
-          <label className="block mb-1">Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-2" />
-          {uploading && <p className="text-sm">Uploading...</p>}
-          {form.image && <img src={form.image} alt="preview" className="h-20 rounded" />}
+          <ImageUpload
+  currentImage={form.image}
+  onUpload={(url) => setForm({ ...form, image: url })}
+/>
         </div>
         <input placeholder="Link (optional)" value={form.link} className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, link: e.target.value })} />
         <textarea placeholder="Description (optional)" rows={3} value={form.description} className="w-full p-3 bg-white/10 rounded" onChange={e => setForm({ ...form, description: e.target.value })} />

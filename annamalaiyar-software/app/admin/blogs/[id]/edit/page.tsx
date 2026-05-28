@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function EditBlog() {
   const router = useRouter();
@@ -83,10 +84,10 @@ export default function EditBlog() {
           onChange={(e) => setForm({ ...form, content: e.target.value })}
         />
         <div>
-          <label className="block mb-1">Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} className="mb-2" />
-          {uploading && <p className="text-sm">Uploading...</p>}
-          {form.image && <img src={form.image} alt="preview" className="h-20 rounded" />}
+          <ImageUpload
+  currentImage={form.image}
+  onUpload={(url) => setForm({ ...form, image: url })}
+/>
         </div>
         <input
           placeholder="Category"
