@@ -12,6 +12,7 @@ import {
   FiSettings,
   FiCheckSquare,
   FiBookOpen,
+  FiLogOut,
 } from "react-icons/fi";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
-  // Check token on mount (only once)
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
     if (!token && pathname !== "/admin/login") {
@@ -29,19 +29,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [pathname, router]);
 
-  // On the login page, show children without the sidebar
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    router.replace("/admin/login");
+  };
+
+  // On the login page, show children without sidebar
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  // For other admin routes, wait until auth check completes
   if (!authed) return null;
 
   return (
     <div className="flex h-screen bg-luxury-dark text-white">
-      <aside className="w-64 bg-luxury-black border-r border-gold/20 p-4 space-y-6">
-        <h2 className="text-2xl font-bold text-gold-400">Admin</h2>
-        <nav className="space-y-2">
+      <aside className="w-64 bg-luxury-black border-r border-gold/20 p-4 flex flex-col">
+        <h2 className="text-2xl font-bold text-gold-400 mb-6">Admin</h2>
+        <nav className="flex-1 space-y-2">
           <Link href="/admin" className="flex items-center gap-2 hover:text-gold-400">
             <FiHome /> Dashboard
           </Link>
@@ -70,6 +74,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <FiSettings /> Settings
           </Link>
         </nav>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 mt-auto text-red-400 hover:text-red-300 transition"
+        >
+          <FiLogOut /> Logout
+        </button>
       </aside>
       <div className="flex-1 overflow-auto p-6">{children}</div>
     </div>
