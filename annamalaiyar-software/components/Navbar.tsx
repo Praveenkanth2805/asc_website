@@ -1,7 +1,7 @@
-// components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 import LanguageToggle from "./LanguageToggle";
@@ -12,7 +12,6 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Check for admin token on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsAdmin(!!localStorage.getItem("admin_token"));
@@ -24,11 +23,18 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
         <Link
           href={isAdmin ? "/admin" : "/"}
-          className="text-gold-400 font-bold text-2xl tracking-wider"
+          className="flex items-center"
         >
-          ASC
+          <Image
+            src="/logo.png"
+            alt="Annamalaiyar Software Centre"
+            width={50}
+            height={50}
+            className="h-10 w-auto"
+            priority
+          />
         </Link>
-        {/* ... rest of the navbar is unchanged ... */}
+
         <div className="hidden md:flex gap-6 text-white font-medium">
           <Link href="/services">{t("services")}</Link>
           <Link href="/portfolio">{t("portfolio")}</Link>
@@ -36,13 +42,18 @@ export default function Navbar() {
           <Link href="/contact">{t("contact")}</Link>
           <Link href="/track">{t("track")}</Link>
         </div>
+
         <div className="flex items-center gap-4">
           <LanguageToggle />
-          <button className="md:hidden text-white" onClick={() => setOpen(!open)}>
+          <button
+            className="md:hidden text-white"
+            onClick={() => setOpen(!open)}
+          >
             {open ? <HiX size={24} /> : <HiMenu size={24} />}
           </button>
         </div>
       </div>
+
       {open && (
         <div className="md:hidden bg-luxury-dark px-4 pb-4 space-y-3">
           <Link href="/services" className="block text-white">

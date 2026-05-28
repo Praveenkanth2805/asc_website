@@ -9,6 +9,7 @@ export function adminNotificationEmail(name: string, email: string, service: str
       .container { max-width:600px; margin:20px auto; background-color:#1A1A1A; border:1px solid #D4AF37; border-radius:12px; overflow:hidden; }
       .header { background-color:#D4AF37; padding:20px; text-align:center; }
       .header h1 { color:#0B0B0B; margin:0; font-size:24px; }
+      .header img { width:60px; margin-top:10px; display:block; margin-left:auto; margin-right:auto; }
       .content { padding:24px; color:#ffffff; }
       .field { margin-bottom:16px; }
       .label { color:#D4AF37; font-weight:bold; }
@@ -20,6 +21,7 @@ export function adminNotificationEmail(name: string, email: string, service: str
     <div class="container">
       <div class="header">
         <h1>Annamalaiyar Software Centre</h1>
+        <img src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" alt="Logo" />
       </div>
       <div class="content">
         <p>New lead received:</p>
@@ -49,6 +51,7 @@ export function autoReplyEmail(userName: string) {
       .container { max-width:600px; margin:20px auto; background-color:#1A1A1A; border:1px solid #D4AF37; border-radius:12px; overflow:hidden; }
       .header { background-color:#D4AF37; padding:20px; text-align:center; }
       .header h1 { color:#0B0B0B; margin:0; font-size:24px; }
+      .header img { width:60px; margin-top:10px; display:block; margin-left:auto; margin-right:auto; }
       .content { padding:24px; color:#ffffff; }
       .button { display:inline-block; margin-top:20px; padding:12px 24px; background-color:#D4AF37; color:#0B0B0B; text-decoration:none; font-weight:bold; border-radius:6px; }
       .footer { padding:16px; text-align:center; color:#888888; font-size:12px; border-top:1px solid #333; }
@@ -58,6 +61,7 @@ export function autoReplyEmail(userName: string) {
     <div class="container">
       <div class="header">
         <h1>Annamalaiyar Software Centre</h1>
+        <img src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" alt="Logo" />
       </div>
       <div class="content">
         <p>Dear ${userName},</p>
@@ -85,6 +89,7 @@ export function otpEmail(otp: string) {
       .container { max-width:600px; margin:20px auto; background-color:#1A1A1A; border:1px solid #D4AF37; border-radius:12px; overflow:hidden; }
       .header { background-color:#D4AF37; padding:20px; text-align:center; }
       .header h1 { color:#0B0B0B; margin:0; font-size:24px; }
+      .header img { width:60px; margin-top:10px; display:block; margin-left:auto; margin-right:auto; }
       .content { padding:24px; color:#ffffff; text-align:center; }
       .otp { font-size:36px; font-weight:bold; color:#D4AF37; letter-spacing:8px; }
       .footer { padding:16px; text-align:center; color:#888888; font-size:12px; border-top:1px solid #333; }
@@ -93,8 +98,8 @@ export function otpEmail(otp: string) {
   <body>
     <div class="container">
       <div class="header">
-        <img src="./favicon.ico" height=50px width=50px>
         <h1>Annamalaiyar Software Centre</h1>
+        <img src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" alt="Logo" />
       </div>
       <div class="content">
         <p>Your one-time password is:</p>
@@ -121,6 +126,7 @@ export function quoteEmail(serviceName: string, price: number, description: stri
       .container { max-width:600px; margin:20px auto; background-color:#1A1A1A; border:1px solid #D4AF37; border-radius:12px; overflow:hidden; }
       .header { background-color:#D4AF37; padding:20px; text-align:center; }
       .header h1 { color:#0B0B0B; margin:0; font-size:24px; }
+      .header img { width:60px; margin-top:10px; display:block; margin-left:auto; margin-right:auto; }
       .content { padding:24px; color:#ffffff; }
       .field { margin-bottom:12px; }
       .label { color:#D4AF37; font-weight:bold; }
@@ -132,6 +138,7 @@ export function quoteEmail(serviceName: string, price: number, description: stri
     <div class="container">
       <div class="header">
         <h1>Your Quote from Annamalaiyar Software Centre</h1>
+        <img src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" alt="Logo" />
       </div>
       <div class="content">
         <div class="field"><span class="label">Service:</span> ${serviceName}</div>
