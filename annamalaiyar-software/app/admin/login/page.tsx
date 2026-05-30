@@ -17,26 +17,45 @@ export default function AdminLogin() {
   const router = useRouter();
 
   const handlePassword = async () => {
+    // --- client-side validation ---
+    setError("");
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Password is required");
+      return;
+    }
+
     setLoading(true);
     try {
       await axios.post("/api/admin/login", { email, password });
       setStep("otp");
       setError("");
     } catch (e: any) {
-      setError(e.response?.data?.error || "Invalid credentials");
+      const msg = e.response?.data?.error || "Invalid credentials";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleOTP = async () => {
+    if (!otp.trim()) {
+      setError("OTP is required");
+      return;
+    }
+
     setLoading(true);
     try {
       const { data } = await axios.post("/api/admin/verify-otp", { email, otp });
       localStorage.setItem("admin_token", data.token);
       router.push("/admin");
     } catch (e: any) {
-      setError(e.response?.data?.error || "Invalid OTP");
+      const msg = e.response?.data?.error || "Invalid OTP";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -75,7 +94,7 @@ export default function AdminLogin() {
             <button
               onClick={handlePassword}
               disabled={loading}
-              className="w-full bg-gold-500 text-black py-2 rounded font-semibold hover:bg-gold-400 transition"
+              className="w-full bg-gold-500 text-black py-2 rounded font-semibold hover:bg-gold-400 transition disabled:opacity-50"
             >
               {loading ? "Sending OTP..." : "Send OTP"}
             </button>
@@ -92,7 +111,7 @@ export default function AdminLogin() {
             <button
               onClick={handleOTP}
               disabled={loading}
-              className="w-full bg-gold-500 text-black py-2 rounded font-semibold hover:bg-gold-400 transition"
+              className="w-full bg-gold-500 text-black py-2 rounded font-semibold hover:bg-gold-400 transition disabled:opacity-50"
             >
               {loading ? "Verifying..." : "Verify & Login"}
             </button>
