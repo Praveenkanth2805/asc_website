@@ -80,12 +80,21 @@ export default function EditQuote() {
           value={form.status}
           onChange={() => {}}
         />
-        <button
-          type="submit"
-          className="bg-gold-500 text-black px-6 py-3 rounded font-semibold"
-        >
-          Update Quote
-        </button>
+        <div className="flex gap-4 pt-4">
+  <button
+    type="submit"
+    className="bg-gold-500 text-black px-6 py-3 rounded font-semibold hover:bg-gold-400 transition"
+  >
+    Update Service
+  </button>
+  <button
+    type="button"
+    onClick={() => router.push("/admin/quotes")}
+    className="bg-white/10 text-white px-6 py-3 rounded font-semibold hover:bg-white/20 transition"
+  >
+    Cancel
+  </button>
+</div>
       </form>
     </div>
   );
