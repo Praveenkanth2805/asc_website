@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import GlassCard from "@/components/GlassCard";
+import toast from "react-hot-toast";
 
 export default function LeadDetail() {
   const { id } = useParams();
+  const router = useRouter();
   const [lead, setLead] = useState<any>(null);
   const [quotes, setQuotes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [quoteForm, setQuoteForm] = useState({
     serviceName: "",
     price: 0,
@@ -18,11 +21,20 @@ export default function LeadDetail() {
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : "";
 
   const fetchLead = async () => {
-    const { data } = await axios.get(`/api/admin/leads/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setLead(data.lead);
-    setQuotes(data.quotes);
+    try {
+      const { data } = await axios.get(`/api/admin/leads/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLead(data.lead);
+      setQuotes(data.quotes);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to load lead");
+      if (error.response?.status === 404) {
+        router.push("/admin/leads");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -31,18 +43,46 @@ export default function LeadDetail() {
 
   const createQuote = async (e: React.FormEvent) => {
     e.preventDefault();
-    await axios.post("/api/admin/quotes", { ...quoteForm, leadId: id }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setQuoteForm({ serviceName: "", price: 0, description: "", deliveryTime: "" });
-    fetchLead();
+    try {
+      await axios.post("/api/admin/quotes", { ...quoteForm, leadId: id }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Quote created");
+      setQuoteForm({ serviceName: "", price: 0, description: "", deliveryTime: "" });
+      fetchLead();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to create quote");
+    }
   };
 
-  if (!lead) return <p>Loading...</p>;
+  const markAccepted = async (quoteId: string) => {
+    try {
+      await axios.put(`/api/admin/quotes/${quoteId}`, { status: "ACCEPTED" }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Quote accepted");
+      fetchLead();
+    } catch (error: any) {
+      toast.error("Failed to update quote");
+    }
+  };
+
+  if (loading) return <p className="text-gray-400 p-6">Loading...</p>;
+  if (!lead) return <p className="text-red-400 p-6">Lead not found</p>;
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-3xl text-gold-400">Lead: {lead.name}</h1>
+      <div className="flex items-center gap-4">
+        <h1 className="text-3xl text-gold-400">Lead: {lead.name}</h1>
+        <button
+          type="button"
+          onClick={() => router.push("/admin/leads")}
+          className="bg-white/10 text-white px-4 py-2 rounded hover:bg-white/20 transition"
+        >
+          Back to Leads
+        </button>
+      </div>
+
       <GlassCard>
         <p><strong>Email:</strong> {lead.email}</p>
         <p><strong>Phone:</strong> {lead.phone}</p>
@@ -61,12 +101,7 @@ export default function LeadDetail() {
             <p className="text-sm text-gray-400">Status: {q.status}</p>
             {q.status === "SENT" && (
               <button
-                onClick={async () => {
-                  await axios.put(`/api/admin/quotes/${q.id}`, { status: "ACCEPTED" }, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  });
-                  fetchLead();
-                }}
+                onClick={() => markAccepted(q.id)}
                 className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
               >
                 Mark Accepted
