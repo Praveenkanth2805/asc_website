@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FiUpload, FiCheckCircle } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
@@ -19,14 +20,24 @@ export default function ImageUpload({ onUpload, currentImage }: ImageUploadProps
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const { data } = await fetch("/api/admin/upload", {
+
+      const response = await fetch("/api/admin/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
-      }).then((res) => res.json());
-      onUpload(data.url);
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      onUpload(result.url);
+      toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Upload failed:", error);
+      toast.error("Image upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
