@@ -8,7 +8,6 @@
   --color-luxury-black: #0B0B0B;
   --color-luxury-dark: #1A1A1A;
 }
-
 /* Glass effect using plain CSS (avoid @apply with opacity modifiers) */
 .glass {
   background-color: rgb(255 255 255 / 0.05);

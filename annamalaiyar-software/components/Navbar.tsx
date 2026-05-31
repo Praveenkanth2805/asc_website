@@ -20,10 +20,11 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-luxury-black/90 backdrop-blur-md border-b border-gold/20">
-      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16 relative">
+        {/* Logo – left side */}
         <Link
           href={isAdmin ? "/admin" : "/"}
-          className="flex items-center"
+          className="flex items-center flex-shrink-0"
         >
           <Image
             src="/logo.png"
@@ -35,6 +36,7 @@ export default function Navbar() {
           />
         </Link>
 
+        {/* Desktop menu */}
         <div className="hidden md:flex gap-6 text-white font-medium">
           <Link href="/services">{t("services")}</Link>
           <Link href="/portfolio">{t("portfolio")}</Link>
@@ -43,32 +45,41 @@ export default function Navbar() {
           <Link href="/track">{t("track")}</Link>
         </div>
 
-        <div className="flex items-center gap-4">
+        {/* Right-side group (language toggle + hamburger) */}
+        <div className="flex items-center gap-2">
           <LanguageToggle />
+          {/* Mobile menu button – always visible on small screens */}
           <button
-            className="md:hidden text-white"
-            onClick={() => setOpen(!open)}
+            type="button"
+            aria-label="Open menu"
+            onClick={() => {
+              console.log("Hamburger clicked");
+              setOpen(prev => !prev);
+            }}
+            className="md:hidden text-white p-3 -mr-2 touch-manipulation"
+            style={{ touchAction: "manipulation" }}
           >
-            {open ? <HiX size={24} /> : <HiMenu size={24} />}
+            {open ? <HiX size={28} /> : <HiMenu size={28} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile dropdown */}
       {open && (
         <div className="md:hidden bg-luxury-dark px-4 pb-4 space-y-3">
-          <Link href="/services" className="block text-white">
+          <Link href="/services" className="block text-white" onClick={() => setOpen(false)}>
             {t("services")}
           </Link>
-          <Link href="/portfolio" className="block text-white">
+          <Link href="/portfolio" className="block text-white" onClick={() => setOpen(false)}>
             {t("portfolio")}
           </Link>
-          <Link href="/blog" className="block text-white">
+          <Link href="/blog" className="block text-white" onClick={() => setOpen(false)}>
             {t("blog")}
           </Link>
-          <Link href="/contact" className="block text-white">
+          <Link href="/contact" className="block text-white" onClick={() => setOpen(false)}>
             {t("contact")}
           </Link>
-          <Link href="/track" className="block text-white">
+          <Link href="/track" className="block text-white" onClick={() => setOpen(false)}>
             {t("track")}
           </Link>
         </div>
