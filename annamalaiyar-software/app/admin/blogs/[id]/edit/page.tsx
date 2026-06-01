@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import toast from "react-hot-toast";
 
 export default function EditBlog() {
   const router = useRouter();
@@ -18,44 +19,44 @@ export default function EditBlog() {
     seoDesc: "",
     published: false,
   });
-  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : "";
 
   useEffect(() => {
-    if (id) {
-      const fetchBlog = async () => {
+    const fetchBlog = async () => {
+      try {
         const { data } = await axios.get(`/api/admin/blogs/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setForm(data);
-      };
-      fetchBlog();
-    }
-  }, [id]);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const { data } = await axios.post("/api/admin/upload", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    setForm({ ...form, image: data.url });
-    setUploading(false);
-  };
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          toast.error("Blog not found");
+          router.push("/admin/blogs");
+        } else {
+          toast.error("Failed to load blog");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchBlog();
+  }, [id, token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await axios.put(`/api/admin/blogs/${id}`, form, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    router.push("/admin/blogs");
+    try {
+      await axios.put(`/api/admin/blogs/${id}`, form, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Blog updated");
+      router.push("/admin/blogs");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Update failed");
+    }
   };
+
+  if (loading) return <p className="text-gray-400 p-6">Loading...</p>;
 
   return (
     <div className="max-w-lg">
@@ -83,12 +84,10 @@ export default function EditBlog() {
           className="w-full p-3 bg-white/10 rounded"
           onChange={(e) => setForm({ ...form, content: e.target.value })}
         />
-        <div>
-          <ImageUpload
-  currentImage={form.image}
-  onUpload={(url) => setForm({ ...form, image: url })}
-/>
-        </div>
+        <ImageUpload
+          currentImage={form.image}
+          onUpload={(url) => setForm({ ...form, image: url })}
+        />
         <input
           placeholder="Category"
           required
@@ -116,21 +115,18 @@ export default function EditBlog() {
           />
           Published
         </label>
-        <div className="flex gap-4 pt-4">
-  <button
-    type="submit"
-    className="bg-gold-500 text-black px-6 py-3 rounded font-semibold hover:bg-gold-400 transition"
-  >
-    Update Service
-  </button>
-  <button
-    type="button"
-    onClick={() => router.push("/admin/blogs")}
-    className="bg-white/10 text-white px-6 py-3 rounded font-semibold hover:bg-white/20 transition"
-  >
-    Cancel
-  </button>
-</div>
+        <div className="flex gap-4">
+          <button type="submit" className="bg-gold-500 text-black px-6 py-3 rounded font-semibold">
+            Update
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/admin/blogs")}
+            className="bg-white/10 text-white px-6 py-3 rounded font-semibold"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
