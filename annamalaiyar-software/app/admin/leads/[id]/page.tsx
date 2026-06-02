@@ -27,6 +27,10 @@ export default function LeadDetail() {
       });
       setLead(data.lead);
       setQuotes(data.quotes);
+      // Pre-fill service name if lead has a service
+      if (data.lead.service) {
+        setQuoteForm(prev => ({ ...prev, serviceName: data.lead.service }));
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to load lead");
       if (error.response?.status === 404) {
@@ -44,11 +48,13 @@ export default function LeadDetail() {
   const createQuote = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("/api/admin/quotes", { ...quoteForm, leadId: id }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "/api/admin/quotes",
+        { ...quoteForm, leadId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("Quote created");
-      setQuoteForm({ serviceName: "", price: 0, description: "", deliveryTime: "" });
+      setQuoteForm({ serviceName: lead?.service || "", price: 0, description: "", deliveryTime: "" });
       fetchLead();
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to create quote");
@@ -57,9 +63,11 @@ export default function LeadDetail() {
 
   const markAccepted = async (quoteId: string) => {
     try {
-      await axios.put(`/api/admin/quotes/${quoteId}`, { status: "ACCEPTED" }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `/api/admin/quotes/${quoteId}`,
+        { status: "ACCEPTED" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("Quote accepted");
       fetchLead();
     } catch (error: any) {
@@ -116,34 +124,37 @@ export default function LeadDetail() {
         <input
           placeholder="Service Name"
           required
-          className="w-full p-3 bg-white/10 rounded"
           value={quoteForm.serviceName}
           onChange={(e) => setQuoteForm({ ...quoteForm, serviceName: e.target.value })}
+          className="w-full p-3 bg-white/10 rounded border border-transparent focus:outline-none focus:border-gold-400"
         />
         <input
           type="number"
           placeholder="Price"
           required
-          className="w-full p-3 bg-white/10 rounded"
           value={quoteForm.price}
           onChange={(e) => setQuoteForm({ ...quoteForm, price: +e.target.value })}
+          className="w-full p-3 bg-white/10 rounded border border-transparent focus:outline-none focus:border-gold-400"
         />
         <textarea
           placeholder="Description"
           required
           rows={2}
-          className="w-full p-3 bg-white/10 rounded"
           value={quoteForm.description}
           onChange={(e) => setQuoteForm({ ...quoteForm, description: e.target.value })}
+          className="w-full p-3 bg-white/10 rounded border border-transparent focus:outline-none focus:border-gold-400"
         />
         <input
           placeholder="Delivery Time"
           required
-          className="w-full p-3 bg-white/10 rounded"
           value={quoteForm.deliveryTime}
           onChange={(e) => setQuoteForm({ ...quoteForm, deliveryTime: e.target.value })}
+          className="w-full p-3 bg-white/10 rounded border border-transparent focus:outline-none focus:border-gold-400"
         />
-        <button type="submit" className="bg-gold-500 text-black px-6 py-3 rounded font-semibold">
+        <button
+          type="submit"
+          className="bg-gold-500 text-black px-6 py-3 rounded font-semibold"
+        >
           Send Quote
         </button>
       </form>
