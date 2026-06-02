@@ -3,10 +3,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import GlassCard from "@/components/GlassCard";
+import toast from "react-hot-toast";
 
 const statusOptions = [
-  "NEW", "CONTACTED", "IN_DISCUSSION", "QUOTE_SENT", "ACCEPTED", "REJECTED",
-  "PROJECT_STARTED", "WAITING_CLIENT", "IN_PROGRESS", "COMPLETED", "DELIVERED"
+  "NEW",
+  "CONTACTED",
+  "IN_DISCUSSION",
+  "QUOTE_SENT",
+  "ACCEPTED",
+  "REJECTED",
+  "PROJECT_STARTED",
+  "WAITING_CLIENT",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "DELIVERED",
 ];
 
 export default function LeadsAdmin() {
@@ -14,19 +24,32 @@ export default function LeadsAdmin() {
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : "";
 
   const fetchLeads = async () => {
-    const { data } = await axios.get("/api/admin/leads", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setLeads(data);
+    try {
+      const { data } = await axios.get("/api/admin/leads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLeads(data);
+    } catch (error) {
+      toast.error("Failed to load leads");
+    }
   };
 
-  useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => {
+    fetchLeads();
+  }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
-    await axios.put(`/api/admin/leads/${id}`, { status: newStatus }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchLeads();
+    try {
+      await axios.put(
+        `/api/admin/leads/${id}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Status updated");
+      fetchLeads();
+    } catch (error) {
+      toast.error("Failed to update status");
+    }
   };
 
   return (
@@ -34,20 +57,29 @@ export default function LeadsAdmin() {
       <h1 className="text-3xl text-gold-400 mb-6">Leads</h1>
       <div className="space-y-4">
         {leads.map((lead) => (
-          <GlassCard key={lead.id} className="flex flex-col md:flex-row justify-between gap-4">
+          <GlassCard
+            key={lead.id}
+            className="flex flex-col md:flex-row justify-between gap-4"
+          >
             <div>
-              <p className="font-semibold">{lead.name} ({lead.email})</p>
-              <p className="text-sm text-gray-400">{lead.phone} — {lead.service || "General"}</p>
+              <p className="font-semibold">
+                {lead.name} ({lead.email})
+              </p>
+              <p className="text-sm text-gray-400">
+                {lead.phone} — {lead.service || "General"}
+              </p>
               <p className="text-sm mt-1">{lead.message}</p>
             </div>
             <div className="flex items-center gap-2">
               <select
                 value={lead.status}
                 onChange={(e) => updateStatus(lead.id, e.target.value)}
-                className="bg-white/10 rounded p-2 text-sm"
+                className="bg-white/10 text-white rounded p-2 text-sm border border-gold/20 focus:outline-none focus:border-gold-400"
               >
                 {statusOptions.map((s) => (
-                  <option key={s} value={s}>{s.replace("_", " ")}</option>
+                  <option key={s} value={s} className="bg-luxury-dark text-white">
+                    {s.replace("_", " ")}
+                  </option>
                 ))}
               </select>
               <a

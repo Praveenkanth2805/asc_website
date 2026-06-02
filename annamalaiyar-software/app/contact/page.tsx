@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect, Suspense } from "react";
 import axios from "axios";
 import { useLang } from "@/contexts/LanguageContext";
 import GlassCard from "@/components/GlassCard";
 import toast from "react-hot-toast";
+import { useSearchParams } from 'next/navigation'
+import { motion } from "framer-motion";
+import { FiSend } from "react-icons/fi"; 
 
-export default function Contact() {
+
+function ContactForm() {
   const { t } = useLang();
+  const searchParams = useSearchParams();
+  const prefilledService = searchParams.get('service') || '';
+  const prefilledMessage = searchParams.get('message') || ''
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
-    service: "",
-    message: "",
+    service: prefilledService,
+    message: prefilledMessage,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
@@ -67,29 +75,65 @@ export default function Contact() {
 
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value });
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
     }
   };
 
-  if (sent) {
-    return (
-      <div className="max-w-xl mx-auto py-12 px-4 text-center">
+  const [countdown, setCountdown] = useState(10);
+
+useEffect(() => {
+  if (!sent) return;
+
+  const timer = setInterval(() => {
+    setCountdown((prev) => {
+      if (prev <= 1) {
+        clearInterval(timer);
+        window.location.href = "/";   // redirect
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [sent]);
+
+if (sent) {
+  return (
+    <div className="max-w-xl mx-auto py-12 px-4 text-center">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", duration: 0.5 }}
+      >
         <GlassCard className="py-12">
-          <div className="text-5xl mb-4">✅</div>
+          <div className="flex justify-center mb-6">
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-20 h-20 flex items-center justify-center rounded-full bg-gold-500/20"
+            >
+              <FiSend size={40} className="text-gold-400" />
+            </motion.div>
+          </div>
           <h2 className="text-3xl text-gold-400 mb-2">{t("thank_you")}</h2>
-          <p className="text-gray-400">We will get back to you within 24 hours.</p>
+          <p className="text-gray-400 mb-4">We will get back to you within 24 hours.</p>
+          <p className="text-sm text-gray-500">
+            Redirecting to home in{" "}
+            <span className="text-gold-400 font-bold">{countdown}</span> seconds...
+          </p>
           <button
-            onClick={() => setSent(false)}
-            className="mt-6 text-gold-400 underline"
+            onClick={() => (window.location.href = "/")}
+            className="mt-6 text-gold-400 underline text-sm"
           >
-            Send another message
+            Go to home now
           </button>
         </GlassCard>
-      </div>
-    );
-  }
+      </motion.div>
+    </div>
+  );
+}
 
   return (
     <div className="max-w-xl mx-auto py-12 px-4">
@@ -131,7 +175,7 @@ export default function Contact() {
           {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
         </div>
 
-        {/* Service (optional) */}
+        {/* Service (optional, auto-filled) */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Service (optional)</label>
           <input
@@ -163,5 +207,14 @@ export default function Contact() {
         </button>
       </form>
     </div>
+  );
+}
+
+// Wrap in Suspense as required by useSearchParams
+export default function Contact() {
+  return (
+    <Suspense fallback={<div className="text-center py-12 text-gray-400">Loading...</div>}>
+      <ContactForm />
+    </Suspense>
   );
 }
