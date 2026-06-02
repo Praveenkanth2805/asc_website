@@ -12,6 +12,8 @@ export default function LeadDetail() {
   const [lead, setLead] = useState<any>(null);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
+  const [sendingQuote, setSendingQuote] = useState(false);
   const [quoteForm, setQuoteForm] = useState({
     serviceName: "",
     price: 0,
@@ -46,20 +48,33 @@ export default function LeadDetail() {
   }, [id]);
 
   const createQuote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.post(
-        "/api/admin/quotes",
-        { ...quoteForm, leadId: id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Quote created");
-      setQuoteForm({ serviceName: lead?.service || "", price: 0, description: "", deliveryTime: "" });
-      fetchLead();
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to create quote");
-    }
-  };
+  e.preventDefault();
+
+  try {
+    setSendingQuote(true);
+
+    await axios.post(
+      "/api/admin/quotes",
+      { ...quoteForm, leadId: id },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    toast.success("Quote created");
+
+    setQuoteForm({
+      serviceName: lead?.service || "",
+      price: 0,
+      description: "",
+      deliveryTime: "",
+    });
+
+    fetchLead();
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Failed to create quote");
+  } finally {
+    setSendingQuote(false);
+  }
+};
 
   const markAccepted = async (quoteId: string) => {
     try {
@@ -109,10 +124,14 @@ export default function LeadDetail() {
             <p className="text-sm text-gray-400">Status: {q.status}</p>
             {q.status === "SENT" && (
               <button
-                onClick={() => markAccepted(q.id)}
+                disabled={acceptingId === q.id}
+  onClick={() => {
+    setAcceptingId(q.id);
+    markAccepted(q.id).finally(() => setAcceptingId(null));
+  }}
                 className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
               >
-                Mark Accepted
+               {acceptingId === q.id ? 'Updating...' : 'Mark Accepted'}
               </button>
             )}
           </GlassCard>
@@ -152,11 +171,16 @@ export default function LeadDetail() {
           className="w-full p-3 bg-white/10 rounded border border-transparent focus:outline-none focus:border-gold-400"
         />
         <button
-          type="submit"
-          className="bg-gold-500 text-black px-6 py-3 rounded font-semibold"
-        >
-          Send Quote
-        </button>
+  type="submit"
+  disabled={sendingQuote}
+  className="bg-gold-500 text-black px-6 py-3 rounded font-semibold disabled:opacity-50 flex items-center gap-2"
+>
+  {sendingQuote && (
+    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+  )}
+
+  {sendingQuote ? "Sending Quote..." : "Send Quote"}
+</button>
       </form>
     </div>
   );

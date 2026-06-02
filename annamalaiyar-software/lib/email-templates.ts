@@ -131,6 +131,7 @@ export function quoteEmail(serviceName: string, price: number, description: stri
       .field { margin-bottom:12px; }
       .label { color:#B8860B; font-weight:bold; }
       .track-link { display:inline-block; margin-top:20px; padding:12px 24px; background-color:#B8860B; color:#0B0B0B; text-decoration:none; font-weight:bold; border-radius:6px; }
+      .accept-button { display:inline-block; margin-top:20px; padding:14px 32px; background-color:#28a745; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:8px; font-size:16px; }
       .footer { padding:16px; text-align:center; color:#888888; font-size:12px; border-top:1px solid #333; }
     </style>
   </head>
@@ -147,6 +148,9 @@ export function quoteEmail(serviceName: string, price: number, description: stri
         <div class="field"><span class="label">Estimated Delivery:</span> ${deliveryTime}</div>
         <p>Track your project using your Quote ID: <strong>${quoteId}</strong></p>
         <a href="${process.env.NEXT_PUBLIC_SITE_URL}/track?quoteId=${quoteId}" class="track-link">Track Progress</a>
+        <br>
+        <a href="${process.env.NEXT_PUBLIC_SITE_URL}/api/accept-quote?quoteId=${quoteId}" class="accept-button">Accept This Quote</a>
+        <p style="color:#B8860B; margin-top:20px; font-size:14px;">⚠️ After acceptance, any changes to the agreed scope may incur additional charges. We will confirm all modifications with you before proceeding.</p>
       </div>
       <div class="footer">
         &copy; ${new Date().getFullYear()} Annamalaiyar Software Centre. All rights reserved.
