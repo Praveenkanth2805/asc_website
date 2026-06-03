@@ -14,6 +14,12 @@ export const GET = withAdminAuth(async () => {
 export const POST = withAdminAuth(async (req: NextRequest) => {
   const body = await req.json();
   const data = projectSchema.parse(body);
+
+  // Convert expectedDelivery string to Date if provided
+  if (data.expectedDelivery) {
+    data.expectedDelivery = new Date(data.expectedDelivery);
+  }
+
   const project = await prisma.project.create({ data });
   return NextResponse.json(project);
 });

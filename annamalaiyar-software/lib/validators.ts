@@ -50,7 +50,7 @@ export const projectSchema = z.object({
   quoteId: z.string().optional(),
   status: z.string().min(1),
   progressNote: z.string().optional(),
-  expectedDelivery: z.string().optional(), // ISO date
+  expectedDelivery: z.coerce.date().optional(), // ISO date
   updates: z.string().optional(), // JSON string
 })
 

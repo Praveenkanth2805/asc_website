@@ -15,10 +15,15 @@ export const GET = withAdminAuth(async (req: NextRequest, context: { params: Pro
 export const PUT = withAdminAuth(async (req: NextRequest, context: { params: Promise<{ id: string }> }) => {
   const { id } = await context.params;
   const { status, progressNote, expectedDelivery } = await req.json();
+
   const data: any = {};
-  if (status) data.status = status;
+  if (status !== undefined) data.status = status;
   if (progressNote !== undefined) data.progressNote = progressNote;
   if (expectedDelivery) data.expectedDelivery = new Date(expectedDelivery);
-  const project = await prisma.project.update({ where: { id }, data });
+
+  const project = await prisma.project.update({
+    where: { id },
+    data,
+  });
   return NextResponse.json(project);
 });
