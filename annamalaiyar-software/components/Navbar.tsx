@@ -43,6 +43,8 @@ export default function Navbar() {
           <Link href="/blog">{t("blog")}</Link>
           <Link href="/contact">{t("contact")}</Link>
           <Link href="/track">{t("track")}</Link>
+          <Link href="/reviews">{t("reviews")}</Link>
+
         </div>
 
         {/* Right-side group (language toggle + hamburger) */}
@@ -81,6 +83,9 @@ export default function Navbar() {
           </Link>
           <Link href="/track" className="block text-white" onClick={() => setOpen(false)}>
             {t("track")}
+          </Link>
+          <Link href="/reviews" className="block text-white" onClick={() => setOpen(false)}>
+            {t("reviews")}
           </Link>
         </div>
       )}

@@ -14,6 +14,14 @@ export default function Home() {
           <GlassCard className="hover:border-gold transition text-center text-lg font-semibold">Get Free Quote</GlassCard>
         </Link>
       </div>
+      <div className="mt-12">
+  <Link
+    href="/reviews"
+    className="inline-block bg-gold-500 text-black px-8 py-3 rounded-full font-semibold hover:bg-gold-400 transition"
+  >
+    Read Client Reviews
+  </Link>
+</div>
     </section>
   )
 }

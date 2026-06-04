@@ -3,28 +3,55 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi'
+import Loader from '@/components/Loader'
+import toast from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
+
 
 export default function ServicesAdmin() {
   const [services, setServices] = useState<any[]>([])
   const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : ''
+  const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
+  
   const fetchServices = async () => {
+  try {
+    setLoading(true)
+
     const { data } = await axios.get('/api/admin/services', {
       headers: { Authorization: `Bearer ${token}` }
     })
+
     setServices(data)
+  } finally {
+    setLoading(false)
   }
+}
 
   useEffect(() => { fetchServices() }, [])
 
-  const deleteService = async (id: string) => {
-    if (confirm('Delete?')) {
-      await axios.delete(`/api/admin/services/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      fetchServices()
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await axios.delete(`/api/admin/services/${deleteId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Service deleted");
+      fetchServices();
+    } catch (error) {
+      toast.error("Failed to delete");
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
     }
-  }
+  };
+
+  if (loading) {
+  return <Loader />
+}
 
   return (
     <div>
@@ -43,11 +70,18 @@ export default function ServicesAdmin() {
             </div>
             <div className="flex gap-4">
               <Link href={`/admin/services/${s.id}/edit`} className="text-blue-400"><FiEdit2 /></Link>
-              <button onClick={() => deleteService(s.id)} className="text-red-400"><FiTrash2 /></button>
+              <button onClick={() => setDeleteId(s.id)} className="text-red-400"><FiTrash2 /></button>
             </div>
           </div>
         ))}
       </div>
+      <ConfirmDialog
+        isOpen={deleteId !== null}
+        message="Are you sure you want to delete this service?"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteId(null)}
+        loading={deleting}
+      />
     </div>
   )
 }
