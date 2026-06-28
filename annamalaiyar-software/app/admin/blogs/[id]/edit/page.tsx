@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
 import toast from "react-hot-toast";
+import Loader from "@/components/Loader";
 
 export default function EditBlog() {
   const router = useRouter();
@@ -43,20 +44,28 @@ export default function EditBlog() {
     if (id) fetchBlog();
   }, [id, token, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.put(`/api/admin/blogs/${id}`, form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success("Blog updated");
-      router.push("/admin/blogs");
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Update failed");
-    }
-  };
+  const [saving, setSaving] = useState(false);
 
-  if (loading) return <p className="text-gray-400 p-6">Loading...</p>;
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    setSaving(true);
+
+    await axios.put(`/api/admin/blogs/${id}`, form, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    toast.success("Blog updated");
+    router.push("/admin/blogs");
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update failed");
+  } finally {
+    setSaving(false);
+  }
+};
+
+  if (loading) return <Loader />;
 
   return (
     <div className="max-w-lg">
@@ -116,9 +125,24 @@ export default function EditBlog() {
           Published
         </label>
         <div className="flex gap-4">
-          <button type="submit" className="bg-gold-500 text-black px-6 py-3 rounded font-semibold">
-            Update
-          </button>
+          <button
+  type="submit"
+  disabled={saving}
+  className={`px-6 py-3 rounded font-semibold flex items-center justify-center gap-2 ${
+    saving
+      ? "bg-gold-500/70 cursor-not-allowed"
+      : "bg-gold-500 cursor-pointer"
+  } text-black`}
+>
+  {saving ? (
+    <>
+      <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      Updating...
+    </>
+  ) : (
+    "Update"
+  )}
+</button>
           <button
             type="button"
             onClick={() => router.push("/admin/blogs")}

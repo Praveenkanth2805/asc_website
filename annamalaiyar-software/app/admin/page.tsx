@@ -2,16 +2,29 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import GlassCard from '@/components/GlassCard'
+import Loader from '@/components/Loader'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  
   useEffect(() => {
-    axios.get('/api/admin/dashboard', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
-    }).then(res => setStats(res.data)).catch(console.error)
-  }, [])
+  axios
+    .get('/api/admin/dashboard', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('admin_token')}`
+      }
+    })
+    .then(res => {
+      setStats(res.data)
+    })
+    .catch(console.error)
+    .finally(() => {
+      setLoading(false)
+    })
+}, [])
 
-  if (!stats) return <p>Loading...</p>
+  if (loading) return <Loader />
   return (
     <div>
       <h1 className="text-3xl text-gold-400 mb-6">Dashboard</h1>
@@ -22,4 +35,5 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
+  
 }
